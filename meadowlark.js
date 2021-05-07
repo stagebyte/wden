@@ -1,15 +1,8 @@
 // call the express module
 const express = require('express');
-
+let fortune = require('./lib/fortune.js');
 const app = express();
 
-let fortunes = [
-    "Conquer your fears or they will conquer you.",
-    "Rivers need springs.",
-    "Do not fear what you don't know.",
-    "You will have a pleasant surprise.",
-    "Whenever possible, keep it simple.",
-    ];
 
 // middleware to handle static page
 app.use(express.static(__dirname + '/public'));
@@ -32,10 +25,11 @@ app.get('/', (req, res) => {
 // about us page for the meadowlark.js
 app.get('/about', (req, res) => {
     // generates random values
-    var randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+    //var randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
     //res.type('text/plain');
     //res.send('About Meadowlark Travel');
-    res.render('about', {fortune: randomFortune})
+    //res.render('about', {fortune: randomFortune})
+    res.render('about', {fortune: fortune.getFortune() })
 })
 
 // custom 404 page
