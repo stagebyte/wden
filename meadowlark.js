@@ -29,7 +29,7 @@ app.get('/', (req, res) => {
     res.render('home')
 })
 
-// home page
+// about us page for the meadowlark.js
 app.get('/about', (req, res) => {
     // generates random values
     var randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
