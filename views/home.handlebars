@@ -1,3 +1,48 @@
+{{! Add to the head tag}}
+{{#section 'head'}}
+    <!-- we want Google to ignore this page -->
+    <title>Home Page</title>
+    <meta name="robots" content="index, follow">
+{{/section}}
+{{! this is a comment for home}}
 <header><img src="/img/logo.jpg" alt="logo"></header>
-<h1>Welcome to Meadowlark Travel</h1>
+<!-- not-so-secret comment -->
+<h1>Welcome to Meadowlark Travel {{ first_name }}</h1>
 <p><a href="/">Home</a> | <a href="/about">about</a> | <a href="/contact">contact us</a></p>
+
+<ul>
+    {{#each tours}}
+        {{! I'm in a new block...and the context has changed }}
+
+        <li>
+            {{name}} - {{price}}
+            {{#if ../currencies}}
+                ({{../currency.abbrev}})
+            {{/if}}
+        </li>
+
+    {{/each}}
+</ul>
+{{#unless currencies}}
+    <p>All prices in {{currency.name}}.</p>
+{{/unless}}
+
+{{#if specialsUrl}}
+    {{! I'm in a new block...but the context hasn't changed (sortof) }}
+    <p>Check out our <a href="{{specialsUrl}}">specials!</p>
+{{else}}
+    <p>Please check back often for specials.</p>
+{{/if}}
+
+<p>
+{{#each currencies}}
+    <a href="#" class="currency">{{.}}</a>
+{{else}}
+    Unfortunately, we currency only accept {{ currency.name }}
+{{/each}}
+</p>
+
+{{> weather}}
+
+
+

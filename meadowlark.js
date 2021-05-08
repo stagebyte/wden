@@ -3,14 +3,99 @@ const express = require('express');
 let fortune = require('./lib/fortune.js');
 const app = express();
 
+var tours = [
+    { id: 0, name: 'Hood River', price: 99.99 },
+    { id: 1, name: 'Oregon Coast', price: 149.95 },
+];
+
+let getWeatherData = function (){
+    return {
+        locations: [
+            {
+                name: 'Portland',
+                forecastUrl: 'http://www.wunderground.com/US/OR/Portland.html',
+                iconUrl: 'http://icons-ak.wxug.com/i/c/k/cloudy.gif',
+                weather: 'Overcast',
+                temp: '54.1 F (12.3 C)',
+            },
+            {
+                name: 'Bend',
+                forecastUrl: 'http://www.wunderground.com/US/OR/Bend.html',
+                iconUrl: 'http://icons-ak.wxug.com/i/c/k/partlycloudy.gif',
+                weather: 'Partly Cloudy',
+                temp: '55.0 F (12.8 C)',
+            },
+            {
+                name: 'Manzanita',
+                forecastUrl: 'http://www.wunderground.com/US/OR/Manzanita.html',
+                iconUrl: 'http://icons-ak.wxug.com/i/c/k/rain.gif',
+                weather: 'Light Rain',
+                temp: '55.0 F (12.8 C)',
+            },
+        ],
+    };
+}
+
+var getVal = {
+    currency: {
+    name: 'United States dollars',
+    abbrev: 'USD',
+    },
+    tours: [
+    { name: 'Hood River', price: '$99.95' },
+    { name: 'Oregon Coast', price: '$159.95' },
+    ],
+    specialsUrl: '/january-specials',
+    currencies: [ 'USD', 'GBP', 'BTC' ],
+    first_name: 'Stanley',
+    locations: [
+        {
+            name: 'Portland',
+            forecastUrl: 'http://www.wunderground.com/US/OR/Portland.html',
+            iconUrl: 'http://icons-ak.wxug.com/i/c/k/cloudy.gif',
+            weather: 'Overcast',
+            temp: '54.1 F (12.3 C)',
+        },
+        {
+            name: 'Bend',
+            forecastUrl: 'http://www.wunderground.com/US/OR/Bend.html',
+            iconUrl: 'http://icons-ak.wxug.com/i/c/k/partlycloudy.gif',
+            weather: 'Partly Cloudy',
+            temp: '55.0 F (12.8 C)',
+        },
+        {
+            name: 'Manzanita',
+            forecastUrl: 'http://www.wunderground.com/US/OR/Manzanita.html',
+            iconUrl: 'http://icons-ak.wxug.com/i/c/k/rain.gif',
+            weather: 'Light Rain',
+            temp: '55.0 F (12.8 C)',
+        },
+    ],
+
+}
+
 
 // middleware to handle static page
 app.use(express.static(__dirname + '/public'));
 
+// enable view caching
+//app.set('view cache', true);
+
 //set handlebars engine
 const handlebars = require('express-handlebars');
+// to use hbs an a short form instead of handlebars
+//const handlebars = require('express-handlebars').create({ extname: '.hbs' });
 
-app.engine('handlebars', handlebars({defaultLayout: 'main'}));
+app.engine('handlebars', handlebars({
+                            defaultLayout: 'main',
+                            helpers: {
+                                    section: function(name, options){
+                                        if(!this._sections) this._sections = {};
+                                        this._sections[name] = options.fn(this);
+                                        return null;
+                                    }
+                                }
+                        }));
 app.set('view engine', 'handlebars');
 
 app.set('port', process.env.PORT || 3000)
@@ -21,13 +106,58 @@ app.use(function(req, res, next){
     req.query.test === '1';
     next();
     });
+ 
+//Example 6-12. GET endpoint that returns JSON, XML, or text
+app.get('/api/toursxp', function(req, res){
+    var toursXml = '<?xml version="1.0"?><tours>' + tours.map(function(p){
+    return '<tour price="' + p.price + '" id="' + p.id + '">' + p.name + '</tour>'}).join('') + '</tours>';
+   
+    var toursText = tours.map(function(p){
+    return p.id + ': ' + p.name + ' (' + p.price + ')';
+    }).join('\n');
 
+    res.format({
+        'application/json': function(){
+            res.json(tours);
+        },
+        'application/xml': function(){
+            res.type('application/xml');
+            res.send(toursXml);
+        },
+        'text/xml': function(){
+            res.type('text/xml');
+            res.send(toursXml);
+        },
+        'text/plain': function(){
+            res.type('text/plain');
+            res.send(toursXml);
+        }
+    });
+
+});
+
+app.get('/nursery-rhyme', function(req, res){
+    res.render('nursery-rhyme');
+});
+
+app.get('/data/nursery-rhyme', function(req, res){
+    res.json({
+        animal: 'squirrel',
+        bodyPart: 'tail',
+        adjective: 'bushy',
+        noun: 'heck',
+    });
+});
+
+app.get('/api/tours', function(req, res){
+        res.json(tours);
+});
 // home page
 app.get('/', (req, res) => {
     //res.type('text/plain');
     //res.send('Meadowlark Travel');
-    res.render('home')
-})
+    res.render('home', getVal)
+});
 
 // about us page for the meadowlark.js
 app.get('/about', (req, res) => {

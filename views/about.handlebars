@@ -1,5 +1,20 @@
+{{! Add to the head tag}}
+{{#section 'head'}}
+    <!-- we want Google to ignore this page -->
+    <title>About Us Page</title>
+    <meta name="robots" content="index, follow">
+{{/section}}
 <header><img src="/img/logo.jpg" alt="logo"></header>
 <h1>About Meadowlark Travel</h1>
+<h2></h2>
 <p><a href="/">Home</a> | <a href="/about">about</a> | <a href="/contact">contact us</a></p>
 <p>Your fortune for the day:</p>
 <blockquote><i>{{fortune}}</i></blockquote>
+
+{{#section 'jquery'}}
+<script>
+    $('document').ready(function(){
+        $('h2').html('jQuery Works');
+    });
+</script>
+{{/section}}
